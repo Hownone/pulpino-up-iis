@@ -39,7 +39,7 @@ module async_fifo
 	generate 
 	for(i=0;i<data_depth;i=i+1)
 	begin: fifo_init
-	always@(posedge wr_clk posedge rst) begin
+	always@(posedge wr_clk or posedge rst) begin
 		if(rst)
 			fifo_ram[i] <= 16'h0;
 		else if(wr_en && (!full))
@@ -61,7 +61,7 @@ module async_fifo
 		vaild <= 1'b1;
 	end
 	else begin
-		dout <= 16'h0;
+		dout <= dout;
 		vaild <= 1'b0;
 	end
 	end
@@ -112,3 +112,4 @@ module async_fifo
 
 
 endmodule
+

@@ -15,6 +15,15 @@
 #define UP_APB_REG_PADIN  ( USER_PLUGIN_APB_BASE_ADDR + 0x24 )
 #define UP_APB_REG_PADOUT ( USER_PLUGIN_APB_BASE_ADDR + 0x28 )
 
+#define IIS_TX_CONFIG     ( USER_PLUGIN_APB_BASE_ADDR + 0x30 )
+#define IIS_RX_CONFIG     ( USER_PLUGIN_APB_BASE_ADDR + 0x34 )
+#define IIS_INTMASK       ( USER_PLUGIN_APB_BASE_ADDR + 0x38 )
+#define IIS_STATUS        ( USER_PLUGIN_APB_BASE_ADDR + 0x3C )
+#define IIS_TX_FIFO	  ( USER_PLUGIN_APB_BASE_ADDR + 0x40 )
+#define IIS_RX_FIFO	  ( USER_PLUGIN_APB_BASE_ADDR + 0x44 )
+#define IIS_INTERRUPT	  ( USER_PLUGIN_APB_BASE_ADDR + 0x48 )
+
+
 #define UP_APB_A          REG(UP_APB_REG_A)
 #define UP_APB_B          REG(UP_APB_REG_B)
 #define UP_APB_S          REG(UP_APB_REG_S)
@@ -26,6 +35,18 @@
 #define UP_APB_PADDIR     REG(UP_APB_REG_PADDIR)
 #define UP_APB_PADIN      REG(UP_APB_REG_PADIN)
 #define UP_APB_PADOUT     REG(UP_APB_REG_PADOUT)
+
+//***********************************************
+#define IIS_TX_CONFIG_REG     REG(IIS_TX_CONFIG)     
+#define IIS_RX_CONFIG_REG     REG(IIS_RX_CONFIG)     
+#define IIS_INTMASK_REG       REG(IIS_INTMASK  )     
+#define IIS_STATUS_REG        REG(IIS_STATUS   )     
+#define IIS_TX_FIFO_REG       REG(IIS_TX_FIFO  )
+#define IIS_RX_FIFO_REG	      REG(IIS_RX_FIFO  )
+#define IIS_INTERRUPT_REG     REG(IIS_INTERRUPT)
+
+
+
 
 #define UP_CTRL_INT_EN_BIT (1 << 0)
 
