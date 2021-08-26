@@ -31,19 +31,18 @@ module IIS_RECEIVE#(
 
 	assign wr_clk = clk;
 
-	always@(posedge clk or posedge rst)
-	begin
-		if(rst)
-			WS_reg <= 1'b0;
-		else 
-			WS_reg <= WS_r;
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
+		WS_reg <= 1'b0;
+	else 
+		WS_reg <= WS_r;
 
 	end
 	assign ws_posedge = WS_r && (!WS_reg);
 	assign ws_negedge = (!WS_r) && WS_reg;
 
-	always@(posedge clk or posedge rst) begin
-	if(rst)
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
 		state <= IDLE;
 	else if(rx_en)
 		state <= next_state;
@@ -80,8 +79,8 @@ module IIS_RECEIVE#(
 	endcase
 	end
 	
-	always@(posedge clk or posedge rst) begin
-	if(rst)
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
 		receive_cnt <= 'd0;
 	else if( (state==GET_LEFT) || (state==GET_RIGHT) )
 	begin
@@ -95,8 +94,8 @@ module IIS_RECEIVE#(
 
 	end
 	
-	always@(posedge clk or posedge rst) begin
-	if(rst)	
+	always@(posedge clk or negedge rst) begin
+	if(!rst)	
 		L_DATA <= 'd0;
 	else if((state==GET_LEFT) && (receive_cnt<'d16) )
 		L_DATA <= {L_DATA[14:0],DATA}; //
@@ -104,26 +103,17 @@ module IIS_RECEIVE#(
 		L_DATA <= L_DATA;
 	end
 
-	always@(posedge clk or posedge rst) begin
-	if(rst)
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
 		R_DATA <= 'd0;
 	else if( (state==GET_RIGHT)&&(receive_cnt <'d16) )
 		R_DATA <= {R_DATA[14:0],DATA};
 	else
 		R_DATA <= R_DATA;
 	end
-/*
-	always@(posedge clk or posedge rst) begin
-	if(rst)
-		SDATA <= 16'd0;	
-	else if(ws_negedge && (receive_cnt=='d17))
-		SDATA <= L_DATA;
-	else if(ws_posedge && (receive_cnt=='d17))
-		SDATA <= R_DATA;
-	end
-*/	
-	always@(posedge clk or posedge rst) begin
-	if(rst)
+
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
 		SDATA <= 16'd0;	
 	else if(ws_posedge && (next_state==GET_LEFT))
 		SDATA <= L_DATA;
@@ -135,15 +125,15 @@ module IIS_RECEIVE#(
 	assign recv_over = (receive_cnt=='d16) ? 1'b1:1'b0;
 	assign fifo_wren1 = recv_over ? 1'b1:1'b0;
 
-	always@(posedge clk or posedge rst) begin
-	if(rst) 
+	always@(posedge clk or negedge rst) begin
+	if(!rst) 
 		fifo_wren  <= 1'b0;
 	else if(receive_num>1 && (receive_num))
 		fifo_wren  <= fifo_wren1;
 	end	
 
-	always@(posedge clk or posedge rst) begin
-	if(rst)
+	always@(posedge clk or negedge rst) begin
+	if(!rst)
 		receive_num <= 32'd0;
 	else if(rx_en) begin
 		if(receive_finish)

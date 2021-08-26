@@ -6,22 +6,27 @@ module apb_iis(
 	input             pwrite,
 	input [31:0]      paddr,
 	input [31:0]      pwdata,
-	//input             sck_i,
-	//input             ws_i,
-	//input             sd_i,
-	//output            sck_o,
-        //output            ws_o,
-        //output            sd_o,
 	output reg [31:0] prdata,
 	output            pready,
 	output            pslverr,
 	output            irq,    //interrupt signals
-
-	input  [7:0]      upio_in_i,
-	output [7:0]      upio_out_o,
-	output [7:0]      upio_dir_o
+	
+	//iis send 	
+	input             sck_i,
+	input             ws_i,
+	input             sd_i,
+	
+	//iis receive
+	output            sck_o,
+        output            ws_o,
+        output            sd_o
+	
+	//input  [7:0]      upio_in_i,
+	//output [7:0]      upio_out_o, //pad
+	//output [7:0]      upio_dir_o
 
 );
+	wire        sck;
 	wire        ws;
 	wire        sd;
 	
@@ -98,7 +103,7 @@ module apb_iis(
 	)
 	tx_fifo
 	(
-		.rst(!presetn),
+		.rst(presetn),
 		.wr_clk(pclk),
 		.wr_en(tx_fifo_wren),
 		.din(pwdata_tx), //from apb bus
@@ -116,11 +121,11 @@ module apb_iis(
 	IIS_SEND(
 		.clk_in(pclk),
 		.data_in(send_data),
-		.rst(!presetn),
+		.rst(presetn),
 		.send_ctrl(iis_tx_config[2:0]), //use register config
-		.data(sd),
-		.WS_reg(ws),
-		.sck(sck),
+		.data(sd),  //
+		.WS_reg(ws),//
+		.sck(sck),  //
 		.rd_clk(tx_fifo_rdclk),
 		.fifo_rden(tx_fifo_rden), //tx_fifo read enable signals
 		.send_num(send_num),
@@ -131,10 +136,10 @@ module apb_iis(
 		.data_depth(128)
 ) 
 	IIS_RECEIVE(
-		.rst(!presetn),
-		.clk(sck),
-		.WS_r(ws),
-		.DATA(sd),
+		.rst(presetn),
+		.clk(sck), //
+		.WS_r(ws), //
+		.DATA(sd), //
 		.rx_en(iis_tx_config[0]&&(!rx_fifo_full)), //use register config
 		.wr_clk(rx_fifo_wrclk), //to -> rx_fifo_wrclk
 		.L_DATA(),
@@ -153,7 +158,7 @@ module apb_iis(
 	)
 	rx_fifo
 	(
-		.rst(!presetn),
+		.rst(presetn),
 		.wr_clk(rx_fifo_wrclk),
 		.wr_en(rx_fifo_wren),
 		.din(receive_data),
@@ -164,12 +169,16 @@ module apb_iis(
 		.empty(rx_fifo_empty),
 		.full(rx_fifo_full) //to apb bus
 );
+	
+	assign sck_o = sck;
+	assign ws_o  = ws;
+	assign sd_o  = sd;	
 
 	//iis send status (apb bus -> tx_fifo)
 	always@(posedge pclk or negedge presetn) begin
 	if(!presetn)
 		apb_to_fifo <= 1'b0;
-	else if((send_num!=32'd0) && (!send_finish))
+	else if((!iis_tx_en) && (!tx_fifo_empty))
 		apb_to_fifo <= 1'b1;
 	else
 		apb_to_fifo <= 1'b0;
@@ -179,7 +188,7 @@ module apb_iis(
 	always@(posedge pclk or negedge presetn) begin
 	if(!presetn)
 		fifo_to_iis <= 1'b0; 
-	else if(tx_fifo_vaild && iis_tx_en)
+	else if( tx_fifo_vaild && iis_tx_en)
 		fifo_to_iis <= 1'b1;
 	else
 		fifo_to_iis <= 1'b0;

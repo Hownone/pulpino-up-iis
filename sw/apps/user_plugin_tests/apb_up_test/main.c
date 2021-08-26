@@ -257,7 +257,7 @@ int main(){
 		printf("out_voice = %x\n",out_voice);
 	}
 	
-	printf("The first transmit has complete!!\n");
+	printf("The second transmit has complete!!\n");
 	
 
     	//check_ABS(&errors);

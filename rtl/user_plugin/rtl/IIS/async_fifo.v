@@ -39,8 +39,8 @@ module async_fifo
 	generate 
 	for(i=0;i<data_depth;i=i+1)
 	begin: fifo_init
-	always@(posedge wr_clk or posedge rst) begin
-		if(rst)
+	always@(posedge wr_clk or negedge rst) begin
+		if(!rst)
 			fifo_ram[i] <= 16'h0;
 		else if(wr_en && (!full))
 			fifo_ram[wr_addr] <= din;
@@ -51,8 +51,8 @@ module async_fifo
 	endgenerate
 	
 	//read fifo
-	always@(posedge rd_clk or posedge rst) begin
-	if(rst) begin
+	always@(posedge rd_clk or negedge rst) begin
+	if(!rst) begin
 		dout  <= 16'h0; 
 		vaild <= 1'b0;
 	end
@@ -79,8 +79,8 @@ module async_fifo
 		rd_addr_gray_d2 <= rd_addr_gray_d1;
 	end
 	
-	always@(posedge wr_clk or posedge rst) begin
-	if(rst)
+	always@(posedge wr_clk or negedge rst) begin
+	if(!rst)
 		wr_addr_ptr <= 'b0;
 	else if(wr_en && (!full))
 		wr_addr_ptr <= wr_addr_ptr + 1'b1;
@@ -94,8 +94,8 @@ module async_fifo
 		wr_addr_gray_d2 <= wr_addr_gray_d1;
 	end
 	
-	always@(posedge rd_clk or posedge rst) begin
-	if(rst)
+	always@(posedge rd_clk or negedge rst) begin
+	if(!rst)
 		rd_addr_ptr <= 'b0;
 	else if(rd_en && (!empty))
 		rd_addr_ptr <= rd_addr_ptr + 1'b1;

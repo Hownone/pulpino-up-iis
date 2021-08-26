@@ -36,8 +36,8 @@ module IIS_SEND#(
 	assign sck = clk_in;
 	assign rd_clk = clk_in;
 	
-	always@(posedge sck or posedge rst) begin
-	if(rst)	
+	always@(posedge sck or negedge rst) begin
+	if(!rst)	
 		state <= IDLE;
 	else if(send_ctrl[0]) //enable signals
 		state <= next_state;
@@ -72,8 +72,8 @@ module IIS_SEND#(
 	endcase
 	end
 
-	always@(posedge sck or posedge rst) begin
-	if(rst)
+	always@(posedge sck or negedge rst) begin
+	if(!rst)
 		bit_cnt <= 'd0;
 	else if( (state!=IDLE) && (bit_cnt!='d18) )
 	//else if( (ws_posedge||ws_negedge) && (bit_cnt!='d16) )
@@ -84,8 +84,8 @@ module IIS_SEND#(
 	
 	//assign WS_reg = (send_ctrl[1]==1'b1);
 
-	always@(posedge sck or posedge rst) begin //
-	if(rst)
+	always@(posedge sck or negedge rst) begin //
+	if(!rst)
 		WS_reg <= 1'b0;
 	else if(fifo_rden)
 		WS_reg <= ~WS_reg;
@@ -93,8 +93,8 @@ module IIS_SEND#(
 		WS_reg <= WS_reg;
 	end	
 
-	always@(posedge sck or posedge rst) begin
-	if(rst)
+	always@(posedge sck or negedge rst) begin
+	if(!rst)
 		WS_t <= 1'b0;
 	else 
 		WS_t <= WS_reg;
@@ -103,8 +103,8 @@ module IIS_SEND#(
 	assign ws_posedge = WS_reg && (!WS_t);
 	assign ws_negedge = (!WS_reg) && WS_t;
 
-	always@(posedge sck or posedge rst) begin
-	if(rst)
+	always@(posedge sck or negedge rst) begin
+	if(!rst)
 		data_send <= 'd0;
 	else if(send_ctrl[2]) 
 	begin
@@ -122,8 +122,8 @@ module IIS_SEND#(
 	assign send_over = (bit_cnt=='d17) ? 1'b1:1'b0;
 	assign fifo_rden1 = send_over ? 1'b1:1'b0;
 
-	always@(posedge sck or posedge rst) begin
-	if(rst) begin
+	always@(posedge sck or negedge rst) begin
+	if(!rst) begin
 		fifo_rden2 <= 1'b0;
 		fifo_rden  <= 1'b0;
 	end
@@ -133,8 +133,8 @@ module IIS_SEND#(
 	end
 	end
 	
-	always@(posedge sck or posedge rst) begin
-	if(rst)
+	always@(posedge sck or negedge rst) begin
+	if(!rst)
 		send_num <= 32'd0;
 	else if(send_finish)
 		send_num <= 32'd0;

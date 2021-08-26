@@ -20,8 +20,23 @@ module user_plugin
 
     logic apb_up_int_o;
     logic axi_up_int_o;
+    
+    wire  sck_i;
+    wire  ws_i;
+    wire  sd_i;
+    wire  sck_o;
+    wire  ws_o;
+    wire  sd_o;
 
     assign int_o = apb_up_int_o | axi_up_int_o;
+    
+    assign upio_out_o = {5'b0,sd_o,ws_o,sck_o};
+    assign upio_dir_o = {5'b0,1'b1,1'b1,1'b1 };
+
+    assign sck_i = upio_in_i[0];
+    assign ws_i  = upio_in_i[1];
+    assign sd_i  = upio_in_i[2];
+      
 
     apb_iis apb_iis_up
     (
@@ -38,10 +53,15 @@ module user_plugin
         .pslverr    ( apb_slv.pslverr     ),
         .irq        ( apb_up_int_o        ),
 	
-	.upio_in_i  ( upio_in_i           ),
-    	.upio_out_o ( upio_out_o          ),
-    	.upio_dir_o ( upio_dir_o          )
-
+	   //input
+	     .sck_i      ( sck_i               ),
+	     .ws_i       ( ws_i                ),
+	     .sd_i       ( sd_i                ),
+	
+	 //output
+	     .sck_o      ( sck_o               ),
+	     .ws_o       ( ws_o                ),
+	     .sd_o       ( sd_o                )
     );
 
     axi_up axi_up_i
